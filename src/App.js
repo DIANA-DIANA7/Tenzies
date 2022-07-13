@@ -1,10 +1,21 @@
-import React, {useState} from "react"
+import React, {useState,useEffect} from "react"
 import {nanoid} from "nanoid"
 import './App.css';
 import Dice from "./components/Dice"
 
 function App() {
   const [dice, setDice] = useState(allNewDice());
+  const [tenzies, setTenzies]=useState(false)
+
+useEffect(()=>{
+  const allHeld=dice.every(die=>die.isHeld)
+  const firstValue=dice[0].value
+  const allSameValue=dice.every(die =>die.value===firstValue)
+  if(allHeld && allSameValue){
+    setTenzies(true)
+    console.log("you Won")
+  }
+},[dice])
 
   function generateNewDie(){
   return {
@@ -33,19 +44,25 @@ function App() {
     }))
   }
 
-  const diceElements = dice.map((dice) => (
+  const diceElements = dice.map((die) => (
     <Dice
-      key={dice.id}
-      value={dice.value}
-      isHeld={dice.isHeld}
-      holdDice={() => holdDice(dice.id)}
+      key={die.id}
+      value={die.value}
+      isHeld={die.isHeld}
+      holdDice={() => holdDice(die.id)}
     />
   ));
 
   return (
     <main>
+      <h1 className="title">Tenzies</h1>
+      <p className="instructions">
+        Roll until all dice are the same. Click each die to hold it between rolls.
+      </p>
       <div className="dice-container">{diceElements}</div>
-      <button className="dice-btn" onClick={rollDice}>Roll</button>
+      <button className="dice-btn" onClick={rollDice}>
+        Roll
+      </button>
     </main>
   );
 }
