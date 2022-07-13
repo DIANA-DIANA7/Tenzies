@@ -6,21 +6,41 @@ import Dice from "./components/Dice"
 function App() {
   const [dice, setDice] = useState(allNewDice());
 
-  function allNewDice() {
-    let diceObject = Array.from({ length: 10 }, () => ({
+  function generateNewDie(){
+  return {
       value: Math.ceil(Math.random() * 6),
       isHeld: false,
-      id: nanoid(),
-    }));
-    console.log(diceObject)
-    return diceObject;
+      id: nanoid()
+    }
+  }
+
+  function allNewDice() {
+    let newDice = Array.from({ length: 10 }, () => (generateNewDie()));
+    
+    return newDice;
   }
   
   function rollDice(){
-    setDice(allNewDice())
+    setDice(oldDice=>oldDice.map(die=>{
+      return die.isHeld ? die : generateNewDie()
+    }))
   }
 
-  const diceElements = dice.map((dice) =>(<Dice key={dice.id} value={dice.value}  isHeld={dice.isHeld}/>));
+
+  function holdDice(id){
+    setDice(oldDice=>oldDice.map(die=>{
+      return die.id === id ? {...die, isHeld: !die.isHeld} : die
+    }))
+  }
+
+  const diceElements = dice.map((dice) => (
+    <Dice
+      key={dice.id}
+      value={dice.value}
+      isHeld={dice.isHeld}
+      holdDice={() => holdDice(dice.id)}
+    />
+  ));
 
   return (
     <main>
